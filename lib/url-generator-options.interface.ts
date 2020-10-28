@@ -1,7 +1,7 @@
 import { ModuleMetadata, Type } from "@nestjs/common";
 
 export interface UrlGeneratorModuleOptions {
-    secret: string;
+    secret?: string;
     appUrl: string;
 }
 

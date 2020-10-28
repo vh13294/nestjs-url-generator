@@ -10,7 +10,6 @@ import { BadRequestException } from '@nestjs/common';
 
 export type ControllerMethod = (...args: any[]) => Promise<any> | any
 
-
 export function generateUrl(
     appUrl: string,
     prefix: string,
@@ -36,21 +35,6 @@ export function getControllerMethodRoute(
     return joinRoutes(controllerRoute, methodRoute)
 }
 
-export function isRouteNotEmpty(route: string): boolean {
-    return (!!route && route !== '/')
-}
-
-export function joinRoutes(...routes: string[]): string {
-    return routes.filter(route => isRouteNotEmpty(route)).join('/')
-}
-
-export function isParamsNameInUrl(route: string, params: Record<string, string>): boolean {
-    const routeParts = route.split('/:')
-    return Object.keys(params).every(param => {
-        return routeParts.includes(param)
-    })
-}
-
 export function putParamsInUrl(route: string, params: Record<string, string>): string {
     if (params) {
         if (isParamsNameInUrl(route, params)) {
@@ -58,17 +42,17 @@ export function putParamsInUrl(route: string, params: Record<string, string>): s
                 route = route.replace(`:${key}`, encodeURIComponent(value))
             }
         } else {
-            throw new BadRequestException('One of the params name does not exist in target URL')
+            throw new BadRequestException('One of the params key does not exist in target URL')
         }
     }
     return route
 }
 
-export function appendQueryParams(route: string, query: string): string {
-    return `${route}?${query}`
-}
+export function generateHmac(url: string, secret?: string): string {
+    if (!secret) {
+        throw new BadRequestException('Secret key is needed for signing URL');
+    }
 
-export function generateHmac(url: string, secret: string): string {
     const hmac = createHmac('sha256', secret)
     hmac.update(url, 'utf8')
     return hmac.digest('hex')
@@ -86,4 +70,23 @@ export function signatureHasNotExpired(expiryDate: Date): boolean {
 export function checkIfQueryHasReservedKeys(query: Record<string, unknown>): boolean {
     const keyArr = Object.keys(query)
     return RESERVED_QUERY_PARAM_NAMES.some((r: string) => keyArr.includes(r))
+}
+
+function isRouteNotEmpty(route: string): boolean {
+    return (!!route && route !== '/')
+}
+
+function isParamsNameInUrl(route: string, params: Record<string, string>): boolean {
+    const routeParts = route.split('/:')
+    return Object.keys(params).every(param => {
+        return routeParts.includes(param)
+    })
+}
+
+function joinRoutes(...routes: string[]): string {
+    return routes.filter(route => isRouteNotEmpty(route)).join('/')
+}
+
+function appendQueryParams(route: string, query: string): string {
+    return `${route}?${query}`
 }

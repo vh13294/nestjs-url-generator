@@ -25,9 +25,7 @@ export class UrlGeneratorService {
         private readonly urlGeneratorModuleOptions: UrlGeneratorModuleOptions,
         private readonly applicationConfig: ApplicationConfig,
     ) {
-        if (!this.urlGeneratorModuleOptions.secret) {
-            throw new Error('The secret key must not be empty');
-        } else if (this.urlGeneratorModuleOptions.secret.length < 32) {
+        if (this.urlGeneratorModuleOptions.secret && (this.urlGeneratorModuleOptions.secret.length < 32)) {
             Logger.warn('[urlGeneratorModuleOptions] A min key length of 256-bit or 32-characters is recommended')
         }
 
@@ -43,7 +41,7 @@ export class UrlGeneratorService {
         params: any = {},
     ): string {
         const controllerMethodFullRoute = getControllerMethodRoute(controller, controllerMethod)
-        
+
         return this.generateUrlFromPath(
             controllerMethodFullRoute,
             query,
@@ -96,7 +94,7 @@ export class UrlGeneratorService {
         relativePath = putParamsInUrl(relativePath, params)
         const prefix = this.applicationConfig.getGlobalPrefix()
         query.expirationDate = expirationDate.toISOString()
-        
+
         const urlWithoutHash = generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
             prefix,
