@@ -1,12 +1,12 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
-import { SignedUrlGuard, SignedUrlService } from 'nestjs-url-generator';
+import { SignedUrlGuard, UrlGeneratorService } from 'nestjs-url-generator';
 import { EmailParams } from './params/email.params';
 import { EmailQuery } from './query/email.query';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly signedUrlService: SignedUrlService,
+    private readonly urlGeneratorService: UrlGeneratorService,
   ) { }
 
   @Get()
@@ -26,8 +26,8 @@ export class AppController {
     }
   }
 
-  @Get('makeSignedUrl')
-  async makeSignedUrl(): Promise<string> {
+  @Get('makeUrl')
+  async makeUrl(): Promise<string> {
     const emailParams = {
       version: '1.0//.%$',
       userId: true
@@ -42,13 +42,13 @@ export class AppController {
       }
     }
 
-    const signedUrl = this.signedUrlService.signedControllerRoute(
+    const urlGenerator = this.urlGeneratorService.signedControllerURL(
       AppController,
       AppController.prototype.emailVerification,
       new Date('2021-12-12'),
       query,
       emailParams
     )
-    return signedUrl
+    return urlGenerator
   }
 }

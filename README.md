@@ -41,11 +41,11 @@ First you need to import this module into your module:
 > app.module.ts
 
 ```ts
-import { SignedUrlModule } from 'nestjs-url-generator';
+import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
     imports: [
-        SignedUrlModule.forRoot({
+        UrlGeneratorModule.forRoot({
             secret: 'secret',
             appUrl: 'localhost:3000',
         })
@@ -66,7 +66,7 @@ APP_URL=localhost:3000
 > signed-url.config.ts
 
 ```ts
-export function signedUrlModuleConfig(): SignedUrlModuleOptions {
+export function urlGeneratorModuleConfig(): UrlGeneratorModuleOptions {
     return {
         secret: process.env.APP_KEY,
         appUrl: process.env.APP_URL,
@@ -77,13 +77,13 @@ export function signedUrlModuleConfig(): SignedUrlModuleOptions {
 > app.module.ts
 
 ```ts
-import { SignedUrlModule } from 'nestjs-url-generator';
+import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        SignedUrlModule.forRootAsync({
-            useFactory: () => signedUrlModuleConfig(),
+        UrlGeneratorModule.forRootAsync({
+            useFactory: () => urlGeneratorModuleConfig(),
         })
     ],
 })
@@ -115,22 +115,22 @@ signedRelativePathUrl(
 > app.controller.ts
 
 ```ts
-import { SignedUrlService } from 'nestjs-url-generator';
+import { UrlGeneratorService } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
     constructor(
-        private readonly signedUrlService: SignedUrlService,
+        private readonly urlGeneratorService: UrlGeneratorService,
     ) { }
 
-    @Get('makeSignedUrl')
-    async makeSignedUrl(): Promise<string> {
+    @Get('makeUrl')
+    async makeUrl(): Promise<string> {
         const query = {
             id: 1,
             info: 'info',
         }
 
-        return this.signedUrlService.signedControllerRoute(
+        return this.urlGeneratorService.signedControllerRoute(
             AppController,
             AppController.prototype.emailVerification,
             new Date('2021-12-12'),
@@ -153,23 +153,23 @@ Exception will be thrown if those query are used.
 
 ## Using Guard
 
-You can use SignedUrlGuard to verify the signed url in controller.
+You can use UrlGeneratorGuard to verify the signed url in controller.
 
 If the url has been tampered or when the expiration date is due, then a Forbidden exception will be thrown.
 
 > app.controller.ts
 
 ```ts
-import { SignedUrlGuard } from 'nestjs-url-generator';
+import { UrlGeneratorGuard } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
     constructor(
-        private readonly signedUrlService: SignedUrlService,
+        private readonly urlGeneratorService: UrlGeneratorService,
     ) { }
 
     @Get('emailVerification')
-    @UseGuards(SignedUrlGuard)
+    @UseGuards(UrlGeneratorGuard)
     async emailVerification(): Promise<string> {
         return 'You emailed has been verified.'
     }

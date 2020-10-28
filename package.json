@@ -1,6 +1,6 @@
 {
   "name": "nestjs-url-generator",
-  "version": "0.0.15",
+  "version": "0.0.1",
   "description": "NestJs library for generating url",
   "keywords": [
     "nestjs",

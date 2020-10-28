@@ -26,7 +26,7 @@
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.4.4",
     "@nestjs/platform-express": "^7.4.4",
-    "nestjs-url-generator": "file:../nestjs.tgz",
+    "nestjs-url-generator": "file:../compiled-lib.tgz",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3"

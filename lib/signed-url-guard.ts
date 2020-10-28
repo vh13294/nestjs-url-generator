@@ -1,11 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext, MethodNotAllowedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { SignedUrlService } from './signed-url-service.service';
+import { UrlGeneratorService } from './url-generator-service.service';
 
 @Injectable()
 export class SignedUrlGuard implements CanActivate {
     constructor(
-        private readonly signedUrlService: SignedUrlService,
+        private readonly urlGeneratorService: UrlGeneratorService,
     ) { }
 
     canActivate(
@@ -20,7 +20,7 @@ export class SignedUrlGuard implements CanActivate {
             throw new MethodNotAllowedException('Unable to derive host name from request')
         }
 
-        return this.signedUrlService.isSignatureValid(
+        return this.urlGeneratorService.isSignatureValid(
             request.headers.host,
             request._parsedUrl.pathname,
             request.query,

@@ -4,10 +4,24 @@ import { stringify as qsStringify } from 'qs'
 import { PATH_METADATA } from '@nestjs/common/constants';
 import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
 
-import { RESERVED_QUERY_PARAM_NAMES } from './signed-url.constants';
+import { RESERVED_QUERY_PARAM_NAMES } from './url-generator.constants';
+import { BadRequestException } from '@nestjs/common';
 
 
 export type ControllerMethod = (...args: any[]) => Promise<any> | any
+
+
+export function generateUrl(
+    appUrl: string,
+    prefix: string,
+    relativePath: string,
+    query: any = {},
+): string {
+    const path = joinRoutes(appUrl, prefix, relativePath)
+    const queryString = stringifyQueryParams(query)
+    const fullPath = appendQueryParams(path, queryString)
+    return fullPath
+}
 
 export function stringifyQueryParams(query: Record<string, unknown>): string {
     return qsStringify(query)
@@ -30,16 +44,22 @@ export function joinRoutes(...routes: string[]): string {
     return routes.filter(route => isRouteNotEmpty(route)).join('/')
 }
 
-export function isParamsNameInURL(route: string, params: Record<string, string>): boolean {
+export function isParamsNameInUrl(route: string, params: Record<string, string>): boolean {
     const routeParts = route.split('/:')
     return Object.keys(params).every(param => {
         return routeParts.includes(param)
     })
 }
 
-export function replaceParamsString(route: string, params: Record<string, string>): string {
-    for (const [key, value] of Object.entries(params)) {
-        route = route.replace(`:${key}`, encodeURIComponent(value))
+export function putParamsInUrl(route: string, params: Record<string, string>): string {
+    if (params) {
+        if (isParamsNameInUrl(route, params)) {
+            for (const [key, value] of Object.entries(params)) {
+                route = route.replace(`:${key}`, encodeURIComponent(value))
+            }
+        } else {
+            throw new BadRequestException('One of the params name does not exist in target URL')
+        }
     }
     return route
 }

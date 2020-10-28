@@ -1,4 +1,4 @@
 export * from './signed-url-guard';
-export * from './signed-url-options.interface';
-export * from './signed-url-service.service';
-export * from './signed-url.module';
+export * from './url-generator-options.interface';
+export * from './url-generator-service.service';
+export * from './url-generator.module';
