@@ -88,5 +88,8 @@ function joinRoutes(...routes: string[]): string {
 }
 
 function appendQueryParams(route: string, query: string): string {
-    return `${route}?${query}`
+    if(query) {
+        return `${route}?${query}`
+    }
+    return route
 }

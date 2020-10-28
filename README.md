@@ -2,7 +2,7 @@
   <img width="40%" src="https://user-images.githubusercontent.com/17086745/97110220-8bf2f780-170a-11eb-9bf4-ca38b8d41be9.png" />
 </p>
 
-<h2 align="center">Signed URL Module for NestJS</h2>
+<h2 align="center">URL Generation Module for NestJS</h2>
 
 <p align="center">
 <a href="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator"><img src="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator/badge" alt="CodeFactor" /></a>
@@ -14,7 +14,9 @@
 
 # Description
 
-`Signed URL` module for for [Nest](https://github.com/nestjs/nest) applications.
+URL Generation is used to dynamically generate URL that point to NestJS controller method (Route).
+
+nestjs-url-generator can generate plain and signed URLs
 
 # Installation
 
@@ -36,7 +38,7 @@ yarn add nestjs-url-generator
 
 ### Include Module
 
-First you need to import this module into your module:
+First you need to import [UrlGeneratorModule]:
 
 > app.module.ts
 
@@ -46,7 +48,7 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
 @Module({
     imports: [
         UrlGeneratorModule.forRoot({
-            secret: 'secret',
+            secret: 'secret', // optional, required only for signed URL
             appUrl: 'localhost:3000',
         })
     ],
@@ -66,6 +68,8 @@ APP_URL=localhost:3000
 > signed-url.config.ts
 
 ```ts
+import { UrlGeneratorModuleOptions } from 'nestjs-url-generator';
+
 export function urlGeneratorModuleConfig(): UrlGeneratorModuleOptions {
     return {
         secret: process.env.APP_KEY,
@@ -94,20 +98,18 @@ export class ApplicationModule {}
 ## Using Service
 
 Now you need to register the service, by injecting it to the constructor.
-There are two methods for signing url:
+There are two methods for generating url:
 
 ```typescript
-signedControllerRoute(
+generateUrlFromController(
     controller: Controller,
     controllerMethod: ControllerMethod,
-    expirationDate: Date,
     query?: any,
     params?: any
 )
 
-signedRelativePathUrl(
+generateUrlFromPath(
     relativePath: string,
-    expirationDate: Date,
     query?: any,
     params?: any
 )
@@ -125,35 +127,70 @@ export class AppController {
 
     @Get('makeUrl')
     async makeUrl(): Promise<string> {
-        const query = {
-            id: 1,
-            info: 'info',
+        const params = {
+            version: '1.0',
+            userId: 12
         }
 
-        return this.urlGeneratorService.signedControllerRoute(
+        const query = {
+            email: 'email@email',
+        }
+
+        // This will generate: 
+        // localhost:3000/emailVerification/1.0/12?email=email%40email
+        return this.urlGeneratorService.generateUrlFromController(
             AppController,
             AppController.prototype.emailVerification,
-            new Date('2021-12-12'),
-            query
+            query,
+            params
         )
     }
 }
 ```
 
-'expirationDate' and 'signed' query are used internally by nestjs-url-generator.
+### Generate Signed URL
 
-Exception will be thrown if those query are used.
+> app.controller.ts
+
+```ts
+import { UrlGeneratorService } from 'nestjs-url-generator';
+
+@Controller()
+export class AppController {
+    constructor(
+        private readonly urlGeneratorService: UrlGeneratorService,
+    ) { }
+
+    @Get('makeSignedUrl')
+    async makeSignedUrl(): Promise<string> {
+
+        // This will generate:
+        // localhost:3000/emailVerification?
+        // expirationDate=2021-12-12T00%3A00%3A00.000Z&
+        // signed=84b5a021c433d0ee961932ac0ec04d5dd5ffd6f7fdb60b46083cfe474dfae3c0
+        return this.urlGeneratorService.signedControllerUrl(
+            AppController,
+            AppController.prototype.emailVerification,
+            new Date('2021-12-12')
+        )
+    }
+}
+```
+
+[expirationDate] and [signed] query keys are used for signed URL.
 
 
 ### Reminder
 
-<img width="60%" src="https://user-images.githubusercontent.com/17086745/97279922-2ae43480-186e-11eb-8946-acf3f168def8.png" />
+The difference between params & query in ExpressJS
+
+<img width="50%" src="https://user-images.githubusercontent.com/17086745/97456127-22bdef00-196b-11eb-89d2-d64d4324498d.png" />
 <br>
 
 
 ## Using Guard
 
-You can use UrlGeneratorGuard to verify the signed url in controller.
+You can use SignedUrlGuard to verify the signed url in controller.
 
 If the url has been tampered or when the expiration date is due, then a Forbidden exception will be thrown.
 

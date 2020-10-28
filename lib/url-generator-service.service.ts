@@ -61,7 +61,7 @@ export class UrlGeneratorService {
         )
     }
 
-    public signedControllerURL(
+    public signedControllerUrl(
         controller: Controller,
         controllerMethod: ControllerMethod,
         expirationDate: Date,

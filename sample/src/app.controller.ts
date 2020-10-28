@@ -73,7 +73,7 @@ export class AppController {
       }
     }
 
-    const urlGenerator = this.urlGeneratorService.signedControllerURL(
+    const urlGenerator = this.urlGeneratorService.signedControllerUrl(
       AppController,
       AppController.prototype.emailVerification,
       new Date('2021-12-12'),
