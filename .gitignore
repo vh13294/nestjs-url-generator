@@ -1,0 +1,20 @@
+# dependencies
+/node_modules
+
+# IDE
+/.idea
+/.awcache
+/.vscode
+.history
+
+# misc
+npm-debug.log
+.DS_Store
+
+# tests
+/coverage
+/.nyc_output
+
+# source
+dist
+*.tgz

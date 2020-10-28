@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "nestjs-url-generator": {
+      "type": "library",
+      "root": "lib",
+      "entryFile": "lib/index",
+      "sourceRoot": "lib",
+      "compilerOptions": {
+        "tsConfigPath": "tsconfig.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}
