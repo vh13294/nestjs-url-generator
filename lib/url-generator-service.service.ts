@@ -14,7 +14,6 @@ import {
     stringifyQueryParams,
     ControllerMethod,
     generateUrl,
-    putParamsInUrl
 } from './helpers';
 
 @Injectable()
@@ -50,14 +49,12 @@ export class UrlGeneratorService {
     }
 
     public generateUrlFromPath(relativePath: string, query: any = {}, params: any = {}): string {
-        relativePath = putParamsInUrl(relativePath, params)
-        const prefix = this.applicationConfig.getGlobalPrefix()
-
         return generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
-            prefix,
+            this.applicationConfig.getGlobalPrefix(),
             relativePath,
             query,
+            params
         )
     }
 
@@ -91,23 +88,22 @@ export class UrlGeneratorService {
             )
         }
 
-        relativePath = putParamsInUrl(relativePath, params)
-        const prefix = this.applicationConfig.getGlobalPrefix()
         query.expirationDate = expirationDate.toISOString()
-
         const urlWithoutHash = generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
-            prefix,
+            this.applicationConfig.getGlobalPrefix(),
             relativePath,
             query,
+            params,
         )
 
         query.signed = generateHmac(urlWithoutHash, this.urlGeneratorModuleOptions.secret)
         const urlWithHash = generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
-            prefix,
+            this.applicationConfig.getGlobalPrefix(),
             relativePath,
             query,
+            params,
         )
 
         return urlWithHash
@@ -120,7 +116,7 @@ export class UrlGeneratorService {
         const hmac = generateHmac(fullUrl, this.urlGeneratorModuleOptions.secret)
         const expiryDate = new Date(restQuery.expirationDate)
 
-        if (!signed || !hmac) {
+        if (!signed || !hmac || (signed.length != hmac.length)) {
             throw new ForbiddenException('Invalid Url')
         } else {
             return isSignatureEqual(signed, hmac) && signatureHasNotExpired(expiryDate);

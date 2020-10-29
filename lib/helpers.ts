@@ -15,7 +15,9 @@ export function generateUrl(
     prefix: string,
     relativePath: string,
     query: any = {},
+    params: any = {},
 ): string {
+    relativePath = putParamsInUrl(relativePath, params)
     const path = joinRoutes(appUrl, prefix, relativePath)
     const queryString = stringifyQueryParams(query)
     const fullPath = appendQueryParams(path, queryString)
@@ -33,19 +35,6 @@ export function getControllerMethodRoute(
     const controllerRoute = Reflect.getMetadata(PATH_METADATA, controller)
     const methodRoute = Reflect.getMetadata(PATH_METADATA, controllerMethod)
     return joinRoutes(controllerRoute, methodRoute)
-}
-
-export function putParamsInUrl(route: string, params: Record<string, string>): string {
-    if (params) {
-        if (isParamsNameInUrl(route, params)) {
-            for (const [key, value] of Object.entries(params)) {
-                route = route.replace(`:${key}`, encodeURIComponent(value))
-            }
-        } else {
-            throw new BadRequestException('One of the params key does not exist in target URL')
-        }
-    }
-    return route
 }
 
 export function generateHmac(url: string, secret?: string): string {
@@ -90,6 +79,19 @@ function joinRoutes(...routes: string[]): string {
 function appendQueryParams(route: string, query: string): string {
     if(query) {
         return `${route}?${query}`
+    }
+    return route
+}
+
+function putParamsInUrl(route: string, params: Record<string, string>): string {
+    if (params) {
+        if (isParamsNameInUrl(route, params)) {
+            for (const [key, value] of Object.entries(params)) {
+                route = route.replace(`:${key}`, encodeURIComponent(value))
+            }
+        } else {
+            throw new BadRequestException('One of the params key does not exist in target URL')
+        }
     }
     return route
 }
