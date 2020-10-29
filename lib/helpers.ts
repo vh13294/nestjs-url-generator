@@ -6,9 +6,8 @@ import { Controller } from '@nestjs/common/interfaces/controllers/controller.int
 
 import { RESERVED_QUERY_PARAM_NAMES } from './url-generator.constants';
 import { BadRequestException } from '@nestjs/common';
+import { ControllerMethod } from './interfaces';
 
-
-export type ControllerMethod = (...args: any[]) => Promise<any> | any
 
 export function generateUrl(
     appUrl: string,
@@ -51,14 +50,18 @@ export function isSignatureEqual(signed: string, hmacValue: string): boolean {
     return timingSafeEqual(Buffer.from(signed), Buffer.from(hmacValue))
 }
 
-export function signatureHasNotExpired(expiryDate: Date): boolean {
+export function signatureHasExpired(expiryDate: Date): boolean {
     const currentDate = new Date()
-    return (expiryDate > currentDate)
+    return (currentDate > expiryDate)
 }
 
 export function checkIfQueryHasReservedKeys(query: Record<string, unknown>): boolean {
     const keyArr = Object.keys(query)
     return RESERVED_QUERY_PARAM_NAMES.some((r: string) => keyArr.includes(r))
+}
+
+export function isObjectEmpty(obj = {}): boolean {
+    return (Object.keys(obj).length == 0)
 }
 
 function isRouteNotEmpty(route: string): boolean {

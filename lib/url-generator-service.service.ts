@@ -1,5 +1,4 @@
 import { ApplicationConfig } from '@nestjs/core';
-import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
 import { Inject, Injectable, Logger, ForbiddenException, ConflictException } from '@nestjs/common';
 
 import { UrlGeneratorModuleOptions } from './url-generator-options.interface';
@@ -8,13 +7,21 @@ import { RESERVED_QUERY_PARAM_NAMES, URL_GENERATOR_MODULE_OPTIONS } from './url-
 import {
     generateHmac,
     getControllerMethodRoute,
-    signatureHasNotExpired,
+    signatureHasExpired,
     isSignatureEqual,
     checkIfQueryHasReservedKeys,
     stringifyQueryParams,
-    ControllerMethod,
     generateUrl,
+    isObjectEmpty,
 } from './helpers';
+
+import {
+    GenerateUrlFromControllerArgs,
+    GenerateUrlFromPathArgs,
+    IsSignatureValidArgs,
+    SignedControllerUrlArgs,
+    SignedUrlArgs
+} from './interfaces';
 
 @Injectable()
 export class UrlGeneratorService {
@@ -33,22 +40,22 @@ export class UrlGeneratorService {
         }
     }
 
-    public generateUrlFromController(
-        controller: Controller,
-        controllerMethod: ControllerMethod,
-        query: any = {},
-        params: any = {},
-    ): string {
+    public generateUrlFromController({
+        controller,
+        controllerMethod,
+        query,
+        params,
+    }: GenerateUrlFromControllerArgs): string {
         const controllerMethodFullRoute = getControllerMethodRoute(controller, controllerMethod)
 
-        return this.generateUrlFromPath(
-            controllerMethodFullRoute,
+        return this.generateUrlFromPath({
+            relativePath: controllerMethodFullRoute,
             query,
             params
-        )
+        })
     }
 
-    public generateUrlFromPath(relativePath: string, query: any = {}, params: any = {}): string {
+    public generateUrlFromPath({ relativePath, query, params }: GenerateUrlFromPathArgs): string {
         return generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
             this.applicationConfig.getGlobalPrefix(),
@@ -58,37 +65,39 @@ export class UrlGeneratorService {
         )
     }
 
-    public signedControllerUrl(
-        controller: Controller,
-        controllerMethod: ControllerMethod,
-        expirationDate: Date,
-        query: any = {},
-        params: any = {},
-    ): string {
+    public signedControllerUrl({
+        controller,
+        controllerMethod,
+        expirationDate,
+        query,
+        params,
+    }: SignedControllerUrlArgs): string {
         const controllerMethodFullRoute = getControllerMethodRoute(controller, controllerMethod)
 
-        return this.signedUrl(
-            controllerMethodFullRoute,
+        return this.signedUrl({
+            relativePath: controllerMethodFullRoute,
             expirationDate,
             query,
             params
-        )
+        })
     }
 
-    public signedUrl(
-        relativePath: string,
-        expirationDate: Date,
-        query: any = {},
-        params: any = {}
-    ): string {
-        if (checkIfQueryHasReservedKeys(query)) {
+    public signedUrl({
+        relativePath,
+        expirationDate,
+        query = {},
+        params
+    }: SignedUrlArgs): string {
+        if (query && checkIfQueryHasReservedKeys(query)) {
             throw new ConflictException(
                 'Your target URL has a query param that is used for signing a route.' +
                 ` eg. [${RESERVED_QUERY_PARAM_NAMES.join(', ')}]`
             )
         }
 
-        query.expirationDate = expirationDate.toISOString()
+        if (expirationDate) {
+            query.expirationDate = expirationDate.toISOString()
+        }
         const urlWithoutHash = generateUrl(
             this.urlGeneratorModuleOptions.appUrl,
             this.applicationConfig.getGlobalPrefix(),
@@ -109,17 +118,22 @@ export class UrlGeneratorService {
         return urlWithHash
     }
 
-    public isSignatureValid(host: string, routePath: string, query: any = {}): boolean {
-        const { signed, ...restQuery } = query;
-        const fullUrl = `${host}${routePath}?${stringifyQueryParams(restQuery)}`
+    public isSignatureValid({ host, routePath, query }: IsSignatureValidArgs): boolean {
+        const { signed, ...restQuery } = query
+        const fullUrl = isObjectEmpty(restQuery)
+            ? `${host}${routePath}`
+            : `${host}${routePath}?${stringifyQueryParams(restQuery)}`
 
         const hmac = generateHmac(fullUrl, this.urlGeneratorModuleOptions.secret)
-        const expiryDate = new Date(restQuery.expirationDate)
 
         if (!signed || !hmac || (signed.length != hmac.length)) {
             throw new ForbiddenException('Invalid Url')
         } else {
-            return isSignatureEqual(signed, hmac) && signatureHasNotExpired(expiryDate);
+            if (restQuery.expirationDate) {
+                const expiryDate = new Date(restQuery.expirationDate)
+                if (signatureHasExpired(expiryDate)) return false
+            }
+            return isSignatureEqual(signed, hmac)
         }
     }
 }

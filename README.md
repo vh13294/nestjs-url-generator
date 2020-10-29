@@ -101,18 +101,18 @@ Now you need to register the service, by injecting it to the constructor.
 There are two methods for generating url:
 
 ```typescript
-generateUrlFromController(
-    controller: Controller,
-    controllerMethod: ControllerMethod,
-    query?: any,
-    params?: any
-)
+generateUrlFromController({
+    controller,
+    controllerMethod,
+    query?,
+    params?,
+})
 
-generateUrlFromPath(
-    relativePath: string,
-    query?: any,
-    params?: any
-)
+generateUrlFromPath({
+    relativePath,
+    query?,
+    params?
+})
 ```
 > app.controller.ts
 
@@ -138,17 +138,36 @@ export class AppController {
 
         // This will generate: 
         // localhost:3000/emailVerification/1.0/12?email=email%40email
-        return this.urlGeneratorService.generateUrlFromController(
-            AppController,
-            AppController.prototype.emailVerification,
-            query,
-            params
-        )
+        return this.urlGeneratorService.generateUrlFromController({
+            controller: AppController,
+            controllerMethod: AppController.prototype.emailVerification,
+            query: query,
+            params: params
+        })
     }
 }
 ```
 
 ### Generate Signed URL
+
+There are two methods for generating url:
+
+```typescript
+signedControllerUrl({
+    controller,
+    controllerMethod,
+    expirationDate?,
+    query?,
+    params?,
+})
+
+signedUrl({
+    relativePath,
+    expirationDate?,
+    query?,
+    params?
+})
+```
 
 > app.controller.ts
 
@@ -168,17 +187,19 @@ export class AppController {
         // localhost:3000/emailVerification?
         // expirationDate=2021-12-12T00%3A00%3A00.000Z&
         // signed=84b5a021c433d0ee961932ac0ec04d5dd5ffd6f7fdb60b46083cfe474dfae3c0
-        return this.urlGeneratorService.signedControllerUrl(
-            AppController,
-            AppController.prototype.emailVerification,
-            new Date('2021-12-12')
-        )
+        return this.urlGeneratorService.signedControllerUrl({
+            controller: AppController,
+            controllerMethod: AppController.prototype.emailVerification,
+            expirationDate: new Date('2021-12-12'),
+        })
     }
 }
 ```
 
-[expirationDate] and [signed] query keys are used for signed URL.
+- [expirationDate] and [signed] query keys are used for signed URL.
 
+- By default, the signed URLs lives forever.
+You can add expiration date to them at the time of generating one.
 
 ### Reminder
 

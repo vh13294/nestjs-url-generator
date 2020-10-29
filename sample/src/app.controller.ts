@@ -36,12 +36,12 @@ export class AppController {
       }
     }
 
-    const urlGenerator = this.urlGeneratorService.generateUrlFromController(
-      AppController,
-      AppController.prototype.target,
-      query,
-      emailParams
-    )
+    const urlGenerator = this.urlGeneratorService.generateUrlFromController({
+      controller: AppController,
+      controllerMethod: AppController.prototype.target,
+      query: query,
+      params: emailParams
+    })
     return urlGenerator
   }
 
@@ -73,13 +73,13 @@ export class AppController {
       }
     }
 
-    const urlGenerator = this.urlGeneratorService.signedControllerUrl(
-      AppController,
-      AppController.prototype.emailVerification,
-      new Date('2021-12-12'),
-      query,
-      emailParams
-    )
+    const urlGenerator = this.urlGeneratorService.signedControllerUrl({
+      controller: AppController,
+      controllerMethod: AppController.prototype.emailVerification,
+      expirationDate: new Date('2021-12-12'),
+      query: query,
+      params: emailParams
+    })
     return urlGenerator
   }
 }

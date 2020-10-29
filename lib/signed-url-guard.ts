@@ -20,10 +20,10 @@ export class SignedUrlGuard implements CanActivate {
             throw new MethodNotAllowedException('Unable to derive host name from request')
         }
 
-        return this.urlGeneratorService.isSignatureValid(
-            request.headers.host,
-            request._parsedUrl.pathname,
-            request.query,
-        )
+        return this.urlGeneratorService.isSignatureValid({
+            host: request.headers.host,
+            routePath: request._parsedUrl.pathname,
+            query: request.query,
+        })
     }
 }
