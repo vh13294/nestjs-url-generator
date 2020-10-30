@@ -1,4 +1,4 @@
-import { DynamicModule, Module, Provider, ValueProvider } from '@nestjs/common';
+import { DynamicModule, Global, Module, Provider, ValueProvider } from '@nestjs/common';
 import {
     UrlGeneratorAsyncModuleOptions,
     UrlGeneratorModuleOptions,
@@ -7,6 +7,7 @@ import {
 import { UrlGeneratorService } from './url-generator-service.service';
 import { URL_GENERATOR_MODULE_OPTIONS } from './url-generator.constants';
 
+@Global()
 @Module({})
 export class UrlGeneratorModule {
     public static forRoot(options: UrlGeneratorModuleOptions): DynamicModule {
