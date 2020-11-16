@@ -1,6 +1,6 @@
 {
   "name": "nestjs-url-generator",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "NestJs library for generating url",
   "keywords": [
     "nestjs",
@@ -30,13 +30,13 @@
   },
   "homepage": "https://github.com/vh13294/nestjs-url-generator#readme",
   "devDependencies": {
-    "@nestjs/common": "^7.4.4",
-    "@nestjs/core": "^7.4.4",
-    "@types/express": "^4.17.8",
-    "@types/node": "^14.14.6",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
-    "eslint": "^7.12.1",
+    "@nestjs/common": "^7.5.2",
+    "@nestjs/core": "^7.5.2",
+    "@types/express": "^4.17.9",
+    "@types/node": "^14.14.7",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "prettier": "^2.1.2",
     "reflect-metadata": "^0.1.13",
