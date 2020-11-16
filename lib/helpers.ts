@@ -69,7 +69,11 @@ function isRouteNotEmpty(route: string): boolean {
 }
 
 function isParamsNameInUrl(route: string, params: Record<string, string>): boolean {
-    const routeParts = route.split('/:')
+    const routeParts = route
+      .split('/')
+      .filter(path => path[0] === ':')
+      .map(path => path.substr(1));
+
     return Object.keys(params).every(param => {
         return routeParts.includes(param)
     })
