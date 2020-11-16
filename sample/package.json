@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "update:lib": "npm r nestjs-url-generator && npm i file:../compiled-lib.tgz",
+    "update:lib": "npm i file:../compiled-lib.tgz",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

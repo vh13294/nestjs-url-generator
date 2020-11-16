@@ -10,7 +10,7 @@ export class EmailController {
     private readonly urlGeneratorService: UrlGeneratorService,
   ) { }
 
-  @Get('target/:version/:userId')
+  @Get('target/version/:version/user/:userId')
   async target(
     @Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery
@@ -46,7 +46,7 @@ export class EmailController {
     return urlGenerator
   }
 
-  @Get('emailVerification/:version/:userId')
+  @Get('emailVerification/version/:version/user/:userId')
   @UseGuards(SignedUrlGuard)
   async emailVerification(
     @Param() emailParams: EmailParams,
