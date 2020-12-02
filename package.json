@@ -1,6 +1,6 @@
 {
   "name": "nestjs-url-generator",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "NestJs library for generating url",
   "keywords": [
     "nestjs",
@@ -17,6 +17,8 @@
     "prebuild": "rm -rf dist && rm *.tgz",
     "build": "tsc -p tsconfig.json",
     "postbuild": "npm pack && mv nestjs-url-generator-*.tgz compiled-lib.tgz",
+    "format": "prettier --write \"lib/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest"
   },
   "repository": {
