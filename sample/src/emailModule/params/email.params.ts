@@ -1,4 +1,4 @@
 export class EmailParams {
-    version: string;
-    userId: number;
+  version: string;
+  userId: number;
 }
