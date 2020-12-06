@@ -49,8 +49,10 @@
   "peerDependencies": {
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
-    "reflect-metadata": "^0.1.13",
-    "@types/qs": "^6.9.0",
-    "qs": "^6.9.0"
+    "reflect-metadata": "^0.1.13"
+  },
+  "dependencies": {
+    "@types/qs": "^6.9.5",
+    "qs": "^6.9.4"
   }
 }
