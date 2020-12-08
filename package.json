@@ -17,7 +17,7 @@
     "prebuild": "rm -rf dist && rm *.tgz",
     "build": "tsc -p tsconfig.json",
     "postbuild": "npm pack && mv nestjs-url-generator-*.tgz compiled-lib.tgz",
-    "update": "npm update && cd sample && npm update",
+    "update": "npx npm-check-updates -u && cd sample && npx npm-check-updates -u",
     "format": "prettier --write \"lib/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{lib,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest"
@@ -37,18 +37,18 @@
     "@nestjs/core": "^7.5.5",
     "@types/express": "^4.17.9",
     "@types/node": "^14.14.10",
-    "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.9.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
     "eslint": "^7.15.0",
-    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-prettier": "^7.0.0",
     "prettier": "^2.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "typescript": "^4.1.2"
   },
   "peerDependencies": {
-    "@nestjs/common": "^7.0.0",
-    "@nestjs/core": "^7.0.0",
+    "@nestjs/common": "^7.5.5",
+    "@nestjs/core": "^7.5.5",
     "reflect-metadata": "^0.1.13"
   },
   "dependencies": {
