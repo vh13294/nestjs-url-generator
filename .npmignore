@@ -2,10 +2,20 @@ sample
 
 test
 
-.eslintrc
+.eslintrc.js
 
 .prettierrc
 
 nest-cli.json
 
 tsconfig.json
+
+
+# IDE
+/.idea
+/.awcache
+/.vscode
+.history
+
+# source
+*.tgz
