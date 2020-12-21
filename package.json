@@ -14,7 +14,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "prebuild": "rm -rf dist && rm *.tgz",
+    "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json",
     "postbuild": "cd sample && npm install $(npm pack ../ | tail -1)",
     "update": "npx npm-check-updates -u && cd sample && npx npm-check-updates -u",

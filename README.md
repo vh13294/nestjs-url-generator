@@ -5,11 +5,18 @@
 <h2 align="center">URL Generation Module for NestJS</h2>
 
 <p align="center">
-<a href="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator"><img src="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator/badge" alt="CodeFactor" /></a>
-<a href="https://www.npmjs.com/package/nestjs-url-generator"><img src="https://img.shields.io/npm/v/nestjs-url-generator.svg?style=flat-square&sanitize=true" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/package/nestjs-url-generator"><img src="https://img.shields.io/npm/dm/nestjs-url-generator.svg?style=flat-square&sanitize=true" alt="NPM Downloads" /></a>
-<a href="#"><img src="https://img.shields.io/npm/l/nestjs-url-generator.svg?colorB=black&label=LICENSE&style=flat-square&sanitize=true" alt="License"/></a>
-
+    <a href="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator">
+        <img src="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator/badge" alt="CodeFactor" />
+    </a>
+    <a href="https://www.npmjs.com/package/nestjs-url-generator">
+        <img src="https://img.shields.io/npm/v/nestjs-url-generator.svg?style=flat-square&sanitize=true" alt="NPM Version" />
+    </a>
+    <a href="https://www.npmjs.com/package/nestjs-url-generator">
+        <img src="https://img.shields.io/npm/dm/nestjs-url-generator.svg?style=flat-square&sanitize=true" alt="NPM Downloads" />
+    </a>
+    <a href="#">
+        <img src="https://img.shields.io/npm/l/nestjs-url-generator.svg?colorB=black&label=LICENSE&style=flat-square&sanitize=true" alt="License"/>
+    </a>
 </p>
 
 # Description
@@ -46,12 +53,12 @@ First you need to import [UrlGeneratorModule]:
 import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
-    imports: [
-        UrlGeneratorModule.forRoot({
-            secret: 'secret', // optional, required only for signed URL
-            appUrl: 'localhost:3000',
-        })
-    ],
+  imports: [
+    UrlGeneratorModule.forRoot({
+      secret: 'secret', // optional, required only for signed URL
+      appUrl: 'localhost:3000',
+    }),
+  ],
 })
 export class ApplicationModule {}
 ```
@@ -71,11 +78,11 @@ APP_URL=localhost:3000
 import { UrlGeneratorModuleOptions } from 'nestjs-url-generator';
 
 export function urlGeneratorModuleConfig(): UrlGeneratorModuleOptions {
-    return {
-        secret: process.env.APP_KEY,
-        appUrl: process.env.APP_URL,
-    }
-};
+  return {
+    secret: process.env.APP_KEY,
+    appUrl: process.env.APP_URL,
+  };
+}
 ```
 
 > app.module.ts
@@ -84,16 +91,15 @@ export function urlGeneratorModuleConfig(): UrlGeneratorModuleOptions {
 import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(),
-        UrlGeneratorModule.forRootAsync({
-            useFactory: () => urlGeneratorModuleConfig(),
-        })
-    ],
+  imports: [
+    ConfigModule.forRoot(),
+    UrlGeneratorModule.forRootAsync({
+      useFactory: () => urlGeneratorModuleConfig(),
+    }),
+  ],
 })
 export class ApplicationModule {}
 ```
-
 
 ## Using Service
 
@@ -102,18 +108,19 @@ There are two methods for generating url:
 
 ```typescript
 generateUrlFromController({
-    controller,
-    controllerMethod,
-    query?,
-    params?,
-})
+  controller,
+  controllerMethod,
+  /*?*/ query,
+  /*?*/ params,
+});
 
 generateUrlFromPath({
-    relativePath,
-    query?,
-    params?
-})
+  relativePath,
+  /*?*/ query,
+  /*?*/ params,
+});
 ```
+
 > app.controller.ts
 
 ```ts
@@ -121,30 +128,28 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
-    constructor(
-        private readonly urlGeneratorService: UrlGeneratorService,
-    ) { }
+  constructor(private readonly urlGeneratorService: UrlGeneratorService) {}
 
-    @Get('makeUrl')
-    async makeUrl(): Promise<string> {
-        const params = {
-            version: '1.0',
-            userId: 12
-        }
+  @Get('makeUrl')
+  async makeUrl(): Promise<string> {
+    const params = {
+      version: '1.0',
+      userId: 12,
+    };
 
-        const query = {
-            email: 'email@email',
-        }
+    const query = {
+      email: 'email@email',
+    };
 
-        // This will generate: 
-        // localhost:3000/emailVerification/1.0/12?email=email%40email
-        return this.urlGeneratorService.generateUrlFromController({
-            controller: AppController,
-            controllerMethod: AppController.prototype.emailVerification,
-            query: query,
-            params: params
-        })
-    }
+    // This will generate:
+    // localhost:3000/emailVerification/1.0/12?email=email%40email
+    return this.urlGeneratorService.generateUrlFromController({
+      controller: AppController,
+      controllerMethod: AppController.prototype.emailVerification,
+      query: query,
+      params: params,
+    });
+  }
 }
 ```
 
@@ -154,19 +159,19 @@ There are two methods for generating url:
 
 ```typescript
 signedControllerUrl({
-    controller,
-    controllerMethod,
-    expirationDate?,
-    query?,
-    params?,
-})
+  controller,
+  controllerMethod,
+  /*?*/ expirationDate,
+  /*?*/ query,
+  /*?*/ params,
+});
 
 signedUrl({
-    relativePath,
-    expirationDate?,
-    query?,
-    params?
-})
+  relativePath,
+  /*?*/ expirationDate,
+  /*?*/ query,
+  /*?*/ params,
+});
 ```
 
 > app.controller.ts
@@ -176,30 +181,30 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
-    constructor(
-        private readonly urlGeneratorService: UrlGeneratorService,
-    ) { }
+  constructor(private readonly urlGeneratorService: UrlGeneratorService) {}
 
-    @Get('makeSignedUrl')
-    async makeSignedUrl(): Promise<string> {
-
-        // This will generate:
-        // localhost:3000/emailVerification?
-        // expirationDate=2021-12-12T00%3A00%3A00.000Z&
-        // signed=84b5a021c433d0ee961932ac0ec04d5dd5ffd6f7fdb60b46083cfe474dfae3c0
-        return this.urlGeneratorService.signedControllerUrl({
-            controller: AppController,
-            controllerMethod: AppController.prototype.emailVerification,
-            expirationDate: new Date('2021-12-12'),
-        })
-    }
+  @Get('makeSignedUrl')
+  async makeSignedUrl(): Promise<string> {
+    // This will generate:
+    // localhost:3000/emailVerification?
+    // expirationDate=2021-12-12T00%3A00%3A00.000Z&
+    // signed=84b5a021c433d0ee961932ac0ec04d5dd5ffd6f7fdb60b46083cfe474dfae3c0
+    return this.urlGeneratorService.signedControllerUrl({
+      controller: AppController,
+      controllerMethod: AppController.prototype.emailVerification,
+      expirationDate: new Date('2021-12-12'),
+      // or using DateTime library of your choice
+      // will be expired 30 minutes after it was created
+      expirationDate: dayjs().add(30, 'minute').toDate(),
+    });
+  }
 }
 ```
 
 - [expirationDate] and [signed] query keys are used for signed URL.
 
 - By default, the signed URLs lives forever.
-You can add expiration date to them at the time of generating one.
+  You can add expiration date to them at the time of generating one.
 
 ### Reminder
 
@@ -207,7 +212,6 @@ The difference between params & query in ExpressJS
 
 <img width="50%" src="https://user-images.githubusercontent.com/17086745/97456127-22bdef00-196b-11eb-89d2-d64d4324498d.png" />
 <br>
-
 
 ## Using Guard
 
@@ -222,26 +226,23 @@ import { UrlGeneratorGuard } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
-    constructor(
-        private readonly urlGeneratorService: UrlGeneratorService,
-    ) { }
+  constructor(private readonly urlGeneratorService: UrlGeneratorService) {}
 
-    @Get('emailVerification')
-    @UseGuards(UrlGeneratorGuard)
-    async emailVerification(): Promise<string> {
-        return 'You emailed has been verified.'
-    }
+  @Get('emailVerification')
+  @UseGuards(UrlGeneratorGuard)
+  async emailVerification(): Promise<string> {
+    return 'You emailed has been verified.';
+  }
 }
-
 ```
 
-
 ## Note
+
 - Changing the secret key will invalidate all signed urls
 - Signed URL is typically used for unsubscribe email, email verification, sign file permission, and more.
 
-
 ### TODO
+
 - [ ] Create test (expiration, query clash, tampered, with or without globalPrefix, request with query & param)
 - [ ] Renovate Automated dependency updates
 - [ ] Automate CI, npm run build, push, npm publish
