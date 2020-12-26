@@ -241,10 +241,18 @@ export class AppController {
 - Changing the secret key will invalidate all signed urls
 - Signed URL is typically used for unsubscribe email, email verification, sign file permission, and more.
 
+## Generating Keys using node REPL
+
+```javascript
+require('crypto').randomBytes(64, (err, buf) => {
+  if (err) throw err;
+  console.log(`${buf.length} bytes of random data: ${buf.toString('base64')}`);
+  process.exit();
+});
+```
+
 ### TODO
 
 - [ ] Create test (expiration, query clash, tampered, with or without globalPrefix, request with query & param)
-- [ ] Renovate Automated dependency updates
 - [ ] Automate CI, npm run build, push, npm publish
 - [ ] Add warning if target for signerUrl doesn't have guard
-- [ ] Add doc about generating a secure key

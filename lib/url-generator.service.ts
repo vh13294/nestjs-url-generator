@@ -39,13 +39,15 @@ export class UrlGeneratorService {
     private readonly urlGeneratorModuleOptions: UrlGeneratorModuleOptions,
     private readonly applicationConfig: ApplicationConfig,
   ) {
-    if (
-      this.urlGeneratorModuleOptions.secret &&
-      this.urlGeneratorModuleOptions.secret.length < 32
-    ) {
-      Logger.warn(
-        '[urlGeneratorModuleOptions] A min key length of 256-bit or 32-characters is recommended',
+    if (this.urlGeneratorModuleOptions.secret) {
+      const byteLength = Buffer.byteLength(
+        this.urlGeneratorModuleOptions.secret,
       );
+      if (byteLength < 32) {
+        Logger.warn(
+          '[urlGeneratorModuleOptions] The key size is recommended to be between 32-64 bytes',
+        );
+      }
     }
 
     if (!this.urlGeneratorModuleOptions.appUrl) {
