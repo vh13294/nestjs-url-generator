@@ -26,7 +26,7 @@ export class SignedUrlGuard implements CanActivate {
     }
 
     return this.urlGeneratorService.isSignatureValid({
-      host: request.headers.host,
+      host: `${request.protocol}://${request.headers.host}`,
       routePath: request._parsedUrl.pathname,
       query: request.query,
     });
