@@ -152,9 +152,15 @@ export class UrlGeneratorService {
     query,
   }: IsSignatureValidArgs): boolean {
     const { signed, ...restQuery } = query;
-    const fullUrl = isObjectEmpty(restQuery)
+    const url = isObjectEmpty(restQuery)
       ? `${host}${routePath}`
       : `${host}${routePath}?${stringifyQueryParams(restQuery)}`;
+
+    const protocol = this.urlGeneratorModuleOptions.appUrl.match(
+      /^(http(s?)\:\/\/)?/g,
+    );
+
+    const fullUrl = `${protocol && protocol[0] ? protocol[0] : ''}${url}`;
 
     const hmac = generateHmac(fullUrl, this.urlGeneratorModuleOptions.secret);
 
