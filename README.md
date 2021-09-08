@@ -2,7 +2,7 @@
   <img width="40%" src="https://user-images.githubusercontent.com/17086745/97110220-8bf2f780-170a-11eb-9bf4-ca38b8d41be9.png" />
 </p>
 
-<h2 align="center">URL Generation Module for NestJS</h2>
+<h2 align="center">NestJS module for generating & signing URL</h2>
 
 <p align="center">
     <a href="https://www.codefactor.io/repository/github/vh13294/nestjs-url-generator">
