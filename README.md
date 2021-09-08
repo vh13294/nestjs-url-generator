@@ -56,7 +56,7 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
   imports: [
     UrlGeneratorModule.forRoot({
       secret: 'secret', // optional, required only for signed URL
-      appUrl: 'localhost:3000',
+      appUrl: 'https://localhost:3000',
     }),
   ],
 })
@@ -69,7 +69,7 @@ Or Async Import With .ENV usage
 
 ```.env
 APP_KEY=secret
-APP_URL=localhost:3000
+APP_URL=https://localhost:3000
 ```
 
 > signed-url.config.ts
@@ -142,7 +142,7 @@ export class AppController {
     };
 
     // This will generate:
-    // localhost:3000/emailVerification/1.0/12?email=email%40email
+    // https://localhost:3000/emailVerification/1.0/12?email=email%40email
     return this.urlGeneratorService.generateUrlFromController({
       controller: AppController,
       controllerMethod: AppController.prototype.emailVerification,
@@ -158,7 +158,7 @@ export class AppController {
 There are two methods for generating url:
 
 ```typescript
-signedControllerUrl({
+SignControllerUrl({
   controller,
   controllerMethod,
   /*?*/ expirationDate,
@@ -166,7 +166,7 @@ signedControllerUrl({
   /*?*/ params,
 });
 
-signedUrl({
+SignUrl({
   relativePath,
   /*?*/ expirationDate,
   /*?*/ query,
@@ -183,13 +183,13 @@ import { UrlGeneratorService } from 'nestjs-url-generator';
 export class AppController {
   constructor(private readonly urlGeneratorService: UrlGeneratorService) {}
 
-  @Get('makeSignedUrl')
-  async makeSignedUrl(): Promise<string> {
+  @Get('makeSignUrl')
+  async makeSignUrl(): Promise<string> {
     // This will generate:
-    // localhost:3000/emailVerification?
+    // https://localhost:3000/emailVerification?
     // expirationDate=2021-12-12T00%3A00%3A00.000Z&
     // signed=84b5a021c433d0ee961932ac0ec04d5dd5ffd6f7fdb60b46083cfe474dfae3c0
-    return this.urlGeneratorService.signedControllerUrl({
+    return this.urlGeneratorService.SignControllerUrl({
       controller: AppController,
       controllerMethod: AppController.prototype.emailVerification,
       expirationDate: new Date('2021-12-12'),
@@ -215,7 +215,7 @@ The difference between params & query in ExpressJS
 
 ## Using Guard
 
-You can use SignedUrlGuard to verify the signed url in controller.
+You can use SignUrlGuard to verify the signed url in controller.
 
 If the url has been tampered or when the expiration date is due, then a Forbidden exception will be thrown.
 
@@ -253,6 +253,6 @@ require('crypto').randomBytes(64, (err, buf) => {
 
 ### TODO
 
-- [ ] Create test (expiration, query clash, tampered, with or without globalPrefix, request with query & param)
+- [ ] Create unit test (expiration, tampered, with or without globalPrefix, request with or without query & param)
 - [ ] Automate CI, npm run build, push, npm publish
 - [ ] Add warning if target for signerUrl doesn't have guard

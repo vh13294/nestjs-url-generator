@@ -8,18 +8,14 @@ import {
 } from '@nestjs/common';
 
 import { UrlGeneratorModuleOptions } from './url-generator-options.interface';
-import {
-  RESERVED_QUERY_PARAM_NAMES,
-  URL_GENERATOR_MODULE_OPTIONS,
-} from './url-generator.constants';
+import { URL_GENERATOR_MODULE_OPTIONS } from './url-generator.constants';
 
 import {
   generateHmac,
   getControllerMethodRoute,
   signatureHasExpired,
   isSignatureEqual,
-  checkIfQueryHasReservedKeys,
-  stringifyQueryParams,
+  stringifyQuery,
   generateUrl,
   isObjectEmpty,
 } from './helpers';
@@ -28,8 +24,9 @@ import {
   GenerateUrlFromControllerArgs,
   GenerateUrlFromPathArgs,
   IsSignatureValidArgs,
-  SignedControllerUrlArgs,
-  SignedUrlArgs,
+  ReservedQuery,
+  SignControllerUrlArgs,
+  SignUrlArgs,
 } from './interfaces';
 
 @Injectable()
@@ -50,8 +47,9 @@ export class UrlGeneratorService {
       }
     }
 
-    if (!this.urlGeneratorModuleOptions.appUrl) {
-      throw new Error('The app url must not be empty');
+    const url = new URL(this.urlGeneratorModuleOptions.appUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw Error('Protocol is required in url');
     }
   }
 
@@ -87,19 +85,19 @@ export class UrlGeneratorService {
     );
   }
 
-  public signedControllerUrl({
+  public signControllerUrl({
     controller,
     controllerMethod,
     expirationDate,
     query,
     params,
-  }: SignedControllerUrlArgs): string {
+  }: SignControllerUrlArgs): string {
     const controllerMethodFullRoute = getControllerMethodRoute(
       controller,
       controllerMethod,
     );
 
-    return this.signedUrl({
+    return this.signUrl({
       relativePath: controllerMethodFullRoute,
       expirationDate,
       query,
@@ -107,21 +105,16 @@ export class UrlGeneratorService {
     });
   }
 
-  public signedUrl({
+  public signUrl({
     relativePath,
     expirationDate,
-    query = {},
+    query,
     params,
-  }: SignedUrlArgs): string {
-    if (query && checkIfQueryHasReservedKeys(query)) {
-      throw new ConflictException(
-        'Your target URL has a query param that is used for signing a route.' +
-          ` eg. [${RESERVED_QUERY_PARAM_NAMES.join(', ')}]`,
-      );
-    }
+  }: SignUrlArgs): string {
+    const mappedQuery = query as ReservedQuery;
 
     if (expirationDate) {
-      query.expirationDate = expirationDate.toISOString();
+      mappedQuery.expirationDate = expirationDate.toISOString();
     }
     const urlWithoutHash = generateUrl(
       this.urlGeneratorModuleOptions.appUrl,
@@ -131,7 +124,7 @@ export class UrlGeneratorService {
       params,
     );
 
-    query.signed = generateHmac(
+    mappedQuery.signed = generateHmac(
       urlWithoutHash,
       this.urlGeneratorModuleOptions.secret,
     );
@@ -147,14 +140,19 @@ export class UrlGeneratorService {
   }
 
   public isSignatureValid({
+    protocol,
     host,
     routePath,
     query,
   }: IsSignatureValidArgs): boolean {
     const { signed, ...restQuery } = query;
-    const fullUrl = isObjectEmpty(restQuery)
-      ? `${host}${routePath}`
-      : `${host}${routePath}?${stringifyQueryParams(restQuery)}`;
+
+    const queryString = stringifyQuery(restQuery);
+
+    let fullUrl = `${protocol}://${host}${routePath}`;
+    if (!isObjectEmpty(restQuery)) {
+      fullUrl += `?${queryString}`;
+    }
 
     const hmac = generateHmac(fullUrl, this.urlGeneratorModuleOptions.secret);
 
@@ -162,8 +160,8 @@ export class UrlGeneratorService {
       throw new ForbiddenException('Invalid Url');
     } else {
       if (restQuery.expirationDate) {
-        const expiryDate = new Date(restQuery.expirationDate);
-        if (signatureHasExpired(expiryDate)) return false;
+        const expirationDate = new Date(restQuery.expirationDate);
+        if (signatureHasExpired(expirationDate)) return false;
       }
       return isSignatureEqual(signed, hmac);
     }

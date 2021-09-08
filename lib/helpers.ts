@@ -4,7 +4,6 @@ import { stringify as qsStringify } from 'qs';
 import { PATH_METADATA } from '@nestjs/common/constants';
 import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
 
-import { RESERVED_QUERY_PARAM_NAMES } from './url-generator.constants';
 import { BadRequestException } from '@nestjs/common';
 import { ControllerMethod } from './interfaces';
 
@@ -17,12 +16,12 @@ export function generateUrl(
 ): string {
   relativePath = putParamsInUrl(relativePath, params);
   const path = joinRoutes(appUrl, prefix, relativePath);
-  const queryString = stringifyQueryParams(query);
+  const queryString = stringifyQuery(query);
   const fullPath = appendQueryParams(path, queryString);
   return fullPath;
 }
 
-export function stringifyQueryParams(query: Record<string, unknown>): string {
+export function stringifyQuery(query: Record<string, unknown>): string {
   return qsStringify(query);
 }
 
@@ -49,16 +48,9 @@ export function isSignatureEqual(signed: string, hmacValue: string): boolean {
   return timingSafeEqual(Buffer.from(signed), Buffer.from(hmacValue));
 }
 
-export function signatureHasExpired(expiryDate: Date): boolean {
+export function signatureHasExpired(expirationDate: Date): boolean {
   const currentDate = new Date();
-  return currentDate > expiryDate;
-}
-
-export function checkIfQueryHasReservedKeys(
-  query: Record<string, unknown>,
-): boolean {
-  const keyArr = Object.keys(query);
-  return RESERVED_QUERY_PARAM_NAMES.some((r: string) => keyArr.includes(r));
+  return currentDate > expirationDate;
 }
 
 export function isObjectEmpty(obj = {}): boolean {
