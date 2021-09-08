@@ -1,12 +1,13 @@
 {
   "name": "nestjs-url-generator",
   "version": "1.0.0",
-  "description": "NestJs library for generating url",
+  "description": "NestJs library for generating & signing url",
   "keywords": [
     "nestjs",
     "nest",
-    "generating-url",
-    "signed-url"
+    "generate-url",
+    "signed-url",
+    "sign-url"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
