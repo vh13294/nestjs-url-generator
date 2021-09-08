@@ -105,23 +105,23 @@ export class UrlGeneratorService {
   public signUrl({
     relativePath,
     expirationDate,
-    query = {}, // empty object avoid undefined error
+    query,
     params,
   }: SignUrlArgs): string {
-    const mappedQuery = query as ReservedQuery;
+    const cloneQuery = Object.assign({}, query) as ReservedQuery;
 
     if (expirationDate) {
-      mappedQuery.expirationDate = expirationDate.toISOString();
+      cloneQuery.expirationDate = expirationDate.toISOString();
     }
     const urlWithoutHash = generateUrl(
       this.urlGeneratorModuleOptions.appUrl,
       this.applicationConfig.getGlobalPrefix(),
       relativePath,
-      query,
+      cloneQuery,
       params,
     );
 
-    mappedQuery.signed = generateHmac(
+    cloneQuery.signed = generateHmac(
       urlWithoutHash,
       this.urlGeneratorModuleOptions.secret,
     );
@@ -129,7 +129,7 @@ export class UrlGeneratorService {
       this.urlGeneratorModuleOptions.appUrl,
       this.applicationConfig.getGlobalPrefix(),
       relativePath,
-      query,
+      cloneQuery,
       params,
     );
 

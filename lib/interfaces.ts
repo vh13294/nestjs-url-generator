@@ -25,6 +25,7 @@ type Not<T> = {
   [Key in keyof T]?: never;
 };
 
+// Type guard for reserved key, when user pass in the query a key-clash will not happen
 type NotReservedQuery = Query & Not<ReservedQuery>;
 
 export interface RequestWithSignature extends Request {
