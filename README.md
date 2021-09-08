@@ -253,6 +253,6 @@ require('crypto').randomBytes(64, (err, buf) => {
 
 ### TODO
 
-- [ ] Create unit test (expiration, tampered, with or without globalPrefix, request with or without query & param)
+- [ ] Create unit test (expiration, tampered, with or without globalPrefix, request with or without query & param, if target for signerUrl doesn't have guard)
+
 - [ ] Automate CI, npm run build, push, npm publish
-- [ ] Add warning if target for signerUrl doesn't have guard

@@ -1,5 +1,9 @@
 import { Request } from 'express';
-import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
+import { Controller } from '@nestjs/common/interfaces';
+
+export interface ControllerClass extends Controller {
+  name: string;
+}
 
 export type ControllerMethod = (...args: any[]) => Promise<any> | any;
 
@@ -28,7 +32,7 @@ export interface RequestWithSignature extends Request {
 }
 
 export interface GenerateUrlFromControllerArgs {
-  controller: Controller;
+  controller: ControllerClass;
   controllerMethod: ControllerMethod;
   query?: Query;
   params?: Params;
@@ -41,7 +45,7 @@ export interface GenerateUrlFromPathArgs {
 }
 
 export interface SignControllerUrlArgs {
-  controller: Controller;
+  controller: ControllerClass;
   controllerMethod: ControllerMethod;
   expirationDate?: Date;
   query?: NotReservedQuery;

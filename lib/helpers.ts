@@ -1,11 +1,11 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { stringify as qsStringify } from 'qs';
 
-import { PATH_METADATA } from '@nestjs/common/constants';
-import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
-
 import { BadRequestException } from '@nestjs/common';
-import { ControllerMethod, Query, Params } from './interfaces';
+import { GUARDS_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+
+import { ControllerMethod, Query, Params, ControllerClass } from './interfaces';
+import { SignedUrlGuard } from './signed-url-guard';
 
 export function generateUrl(
   appUrl: string,
@@ -26,12 +26,28 @@ export function stringifyQuery(query?: Query): string {
 }
 
 export function getControllerMethodRoute(
-  controller: Controller,
+  controller: ControllerClass,
   controllerMethod: ControllerMethod,
 ): string {
   const controllerRoute = Reflect.getMetadata(PATH_METADATA, controller);
   const methodRoute = Reflect.getMetadata(PATH_METADATA, controllerMethod);
   return joinRoutes(controllerRoute, methodRoute);
+}
+
+export function checkIfMethodHasSignedGuardDecorator(
+  controller: ControllerClass,
+  controllerMethod: ControllerMethod,
+): void {
+  const arrOfClasses = Reflect.getMetadata(GUARDS_METADATA, controllerMethod);
+  const errorMessage = `Please add SignedUrlGuard to ${controller.name}.${controllerMethod.name}`;
+  if (!arrOfClasses) {
+    throw new BadRequestException(errorMessage);
+  }
+
+  const guardExist = arrOfClasses.includes(SignedUrlGuard);
+  if (!guardExist) {
+    throw new BadRequestException(errorMessage);
+  }
 }
 
 export function generateHmac(url: string, secret?: string): string {
