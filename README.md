@@ -241,6 +241,16 @@ export class AppController {
 - Changing the secret key will invalidate all signed urls
 - Signed URL is typically used for unsubscribe email, email verification, sign file permission, and more.
 
+- If you are using https with reverse proxy please make sure to enable trust proxy in express
+
+```typescript
+const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+app.set('trust proxy', true);
+// or
+expressSession({ proxy: true });
+```
+
 ## Generating Keys using node REPL
 
 ```javascript
@@ -256,5 +266,3 @@ require('crypto').randomBytes(64, (err, buf) => {
 - [ ] Create unit test (expiration, tampered, with or without globalPrefix, request with or without query & param, if target for signerUrl doesn't have guard)
 
 - [ ] Automate CI, npm run build, push, npm publish
-
-- [ ] test protocol mismatch https -> http when signing
