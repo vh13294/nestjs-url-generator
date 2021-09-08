@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 
 import { SignedUrlGuard, UrlGeneratorService } from 'nestjs-url-generator';
+import { AuthGuard } from './auth.guard';
 import { EmailParams } from './params/email.params';
 import { EmailQuery } from './query/email.query';
 
@@ -23,7 +24,7 @@ export class EmailController {
   async makeUrl(): Promise<string> {
     const emailParams = {
       version: '1.0//.%$',
-      userId: true,
+      userId: 'true',
     };
 
     const query: EmailQuery = {
@@ -45,7 +46,7 @@ export class EmailController {
   }
 
   @Get('emailVerification/version/:version/user/:userId')
-  @UseGuards(SignedUrlGuard)
+  @UseGuards(SignedUrlGuard, AuthGuard)
   async emailVerification(
     @Param() emailParams: EmailParams,
     @Query() emailQuery: EmailQuery,
@@ -60,7 +61,7 @@ export class EmailController {
   async makeSignedUrl(): Promise<string> {
     const emailParams = {
       version: '1.0//.%$',
-      userId: true,
+      userId: 'true',
     };
 
     const query: EmailQuery = {
@@ -72,7 +73,7 @@ export class EmailController {
       },
     };
 
-    const urlGenerator = this.urlGeneratorService.signedControllerUrl({
+    const urlGenerator = this.urlGeneratorService.signControllerUrl({
       controller: EmailController,
       controllerMethod: EmailController.prototype.emailVerification,
       expirationDate: new Date('2021-12-12'),

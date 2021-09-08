@@ -1,38 +1,53 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { stringify as qsStringify } from 'qs';
 
-import { PATH_METADATA } from '@nestjs/common/constants';
-import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
-
-import { RESERVED_QUERY_PARAM_NAMES } from './url-generator.constants';
 import { BadRequestException } from '@nestjs/common';
-import { ControllerMethod } from './interfaces';
+import { GUARDS_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+
+import { ControllerMethod, Query, Params, ControllerClass } from './interfaces';
+import { SignedUrlGuard } from './signed-url-guard';
 
 export function generateUrl(
   appUrl: string,
   prefix: string,
   relativePath: string,
-  query: any = {},
-  params: any = {},
+  query?: Query,
+  params?: Params,
 ): string {
   relativePath = putParamsInUrl(relativePath, params);
   const path = joinRoutes(appUrl, prefix, relativePath);
-  const queryString = stringifyQueryParams(query);
-  const fullPath = appendQueryParams(path, queryString);
+  const queryString = stringifyQuery(query);
+  const fullPath = appendQuery(path, queryString);
   return fullPath;
 }
 
-export function stringifyQueryParams(query: Record<string, unknown>): string {
+export function stringifyQuery(query?: Query): string {
   return qsStringify(query);
 }
 
 export function getControllerMethodRoute(
-  controller: Controller,
+  controller: ControllerClass,
   controllerMethod: ControllerMethod,
 ): string {
   const controllerRoute = Reflect.getMetadata(PATH_METADATA, controller);
   const methodRoute = Reflect.getMetadata(PATH_METADATA, controllerMethod);
   return joinRoutes(controllerRoute, methodRoute);
+}
+
+export function checkIfMethodHasSignedGuardDecorator(
+  controller: ControllerClass,
+  controllerMethod: ControllerMethod,
+): void {
+  const arrOfClasses = Reflect.getMetadata(GUARDS_METADATA, controllerMethod);
+  const errorMessage = `Please add SignedUrlGuard to ${controller.name}.${controllerMethod.name}`;
+  if (!arrOfClasses) {
+    throw new BadRequestException(errorMessage);
+  }
+
+  const guardExist = arrOfClasses.includes(SignedUrlGuard);
+  if (!guardExist) {
+    throw new BadRequestException(errorMessage);
+  }
 }
 
 export function generateHmac(url: string, secret?: string): string {
@@ -49,30 +64,16 @@ export function isSignatureEqual(signed: string, hmacValue: string): boolean {
   return timingSafeEqual(Buffer.from(signed), Buffer.from(hmacValue));
 }
 
-export function signatureHasExpired(expiryDate: Date): boolean {
+export function signatureHasExpired(expirationDate: Date): boolean {
   const currentDate = new Date();
-  return currentDate > expiryDate;
-}
-
-export function checkIfQueryHasReservedKeys(
-  query: Record<string, unknown>,
-): boolean {
-  const keyArr = Object.keys(query);
-  return RESERVED_QUERY_PARAM_NAMES.some((r: string) => keyArr.includes(r));
-}
-
-export function isObjectEmpty(obj = {}): boolean {
-  return Object.keys(obj).length == 0;
+  return currentDate > expirationDate;
 }
 
 function isRouteNotEmpty(route: string): boolean {
   return !!route && route !== '/';
 }
 
-function isParamsNameInUrl(
-  route: string,
-  params: Record<string, string>,
-): boolean {
+function isParamsNameInUrl(route: string, params: Params): boolean {
   const routeParts = route
     .split('/')
     .filter((path) => path[0] === ':')
@@ -87,14 +88,14 @@ function joinRoutes(...routes: string[]): string {
   return routes.filter((route) => isRouteNotEmpty(route)).join('/');
 }
 
-function appendQueryParams(route: string, query: string): string {
+export function appendQuery(route: string, query: string): string {
   if (query) {
     return `${route}?${query}`;
   }
   return route;
 }
 
-function putParamsInUrl(route: string, params: Record<string, string>): string {
+function putParamsInUrl(route: string, params?: Params): string {
   if (params) {
     if (isParamsNameInUrl(route, params)) {
       for (const [key, value] of Object.entries(params)) {
