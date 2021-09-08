@@ -1,11 +1,5 @@
 import { ApplicationConfig } from '@nestjs/core';
-import {
-  Inject,
-  Injectable,
-  Logger,
-  ForbiddenException,
-  ConflictException,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, ForbiddenException } from '@nestjs/common';
 
 import { UrlGeneratorModuleOptions } from './url-generator-options.interface';
 import { URL_GENERATOR_MODULE_OPTIONS } from './url-generator.constants';
@@ -17,7 +11,7 @@ import {
   isSignatureEqual,
   stringifyQuery,
   generateUrl,
-  isObjectEmpty,
+  appendQuery,
 } from './helpers';
 
 import {
@@ -108,7 +102,7 @@ export class UrlGeneratorService {
   public signUrl({
     relativePath,
     expirationDate,
-    query,
+    query = {}, // empty object avoid undefined error
     params,
   }: SignUrlArgs): string {
     const mappedQuery = query as ReservedQuery;
@@ -147,14 +141,11 @@ export class UrlGeneratorService {
   }: IsSignatureValidArgs): boolean {
     const { signed, ...restQuery } = query;
 
+    const path = `${protocol}://${host}${routePath}`;
     const queryString = stringifyQuery(restQuery);
+    const fullPath = appendQuery(path, queryString);
 
-    let fullUrl = `${protocol}://${host}${routePath}`;
-    if (!isObjectEmpty(restQuery)) {
-      fullUrl += `?${queryString}`;
-    }
-
-    const hmac = generateHmac(fullUrl, this.urlGeneratorModuleOptions.secret);
+    const hmac = generateHmac(fullPath, this.urlGeneratorModuleOptions.secret);
 
     if (!signed || !hmac || signed.length != hmac.length) {
       throw new ForbiddenException('Invalid Url');

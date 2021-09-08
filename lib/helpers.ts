@@ -5,23 +5,23 @@ import { PATH_METADATA } from '@nestjs/common/constants';
 import { Controller } from '@nestjs/common/interfaces/controllers/controller.interface';
 
 import { BadRequestException } from '@nestjs/common';
-import { ControllerMethod } from './interfaces';
+import { ControllerMethod, Query, Params } from './interfaces';
 
 export function generateUrl(
   appUrl: string,
   prefix: string,
   relativePath: string,
-  query: any = {},
-  params: any = {},
+  query?: Query,
+  params?: Params,
 ): string {
   relativePath = putParamsInUrl(relativePath, params);
   const path = joinRoutes(appUrl, prefix, relativePath);
   const queryString = stringifyQuery(query);
-  const fullPath = appendQueryParams(path, queryString);
+  const fullPath = appendQuery(path, queryString);
   return fullPath;
 }
 
-export function stringifyQuery(query: Record<string, unknown>): string {
+export function stringifyQuery(query?: Query): string {
   return qsStringify(query);
 }
 
@@ -53,18 +53,11 @@ export function signatureHasExpired(expirationDate: Date): boolean {
   return currentDate > expirationDate;
 }
 
-export function isObjectEmpty(obj = {}): boolean {
-  return Object.keys(obj).length == 0;
-}
-
 function isRouteNotEmpty(route: string): boolean {
   return !!route && route !== '/';
 }
 
-function isParamsNameInUrl(
-  route: string,
-  params: Record<string, string>,
-): boolean {
+function isParamsNameInUrl(route: string, params: Params): boolean {
   const routeParts = route
     .split('/')
     .filter((path) => path[0] === ':')
@@ -79,14 +72,14 @@ function joinRoutes(...routes: string[]): string {
   return routes.filter((route) => isRouteNotEmpty(route)).join('/');
 }
 
-function appendQueryParams(route: string, query: string): string {
+export function appendQuery(route: string, query: string): string {
   if (query) {
     return `${route}?${query}`;
   }
   return route;
 }
 
-function putParamsInUrl(route: string, params: Record<string, string>): string {
+function putParamsInUrl(route: string, params?: Params): string {
   if (params) {
     if (isParamsNameInUrl(route, params)) {
       for (const [key, value] of Object.entries(params)) {

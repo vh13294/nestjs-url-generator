@@ -3,10 +3,10 @@ import { Controller } from '@nestjs/common/interfaces/controllers/controller.int
 
 export type ControllerMethod = (...args: any[]) => Promise<any> | any;
 
-interface Query {
+export interface Query {
   [key: string]: any;
 }
-interface Params {
+export interface Params {
   [key: string]: string;
 }
 
