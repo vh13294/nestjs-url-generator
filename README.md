@@ -256,3 +256,5 @@ require('crypto').randomBytes(64, (err, buf) => {
 - [ ] Create unit test (expiration, tampered, with or without globalPrefix, request with or without query & param, if target for signerUrl doesn't have guard)
 
 - [ ] Automate CI, npm run build, push, npm publish
+
+- [ ] test protocol mismatch https -> http when signing
