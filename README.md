@@ -236,6 +236,13 @@ export class AppController {
 }
 ```
 
+## Using with `nestjs-console`
+If you are using `nestjs-console` or `NestFactory.createApplicationContext()`. You should disable detecting global prefixes with configuration option. And manually add prefix to `appUrl`
+```ts
+  detectGlobalPrefix: false
+```
+
+
 ## Note
 
 - Changing the secret key will invalidate all signed urls

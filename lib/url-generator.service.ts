@@ -31,6 +31,13 @@ export class UrlGeneratorService {
     private readonly urlGeneratorModuleOptions: UrlGeneratorModuleOptions,
     private readonly applicationConfig: ApplicationConfig,
   ) {
+    if (this.applicationConfig === undefined) {
+      if (this.urlGeneratorModuleOptions.detectGlobalPrefix !== false) {
+        throw new Error(
+          'ApplicationConfig is not defined. Try to set detectGlobalPrefix to false',
+        );
+      }
+    }
     if (this.urlGeneratorModuleOptions.secret) {
       const byteLength = Buffer.byteLength(
         this.urlGeneratorModuleOptions.secret,
@@ -73,7 +80,7 @@ export class UrlGeneratorService {
   }: GenerateUrlFromPathArgs): string {
     return generateUrl(
       this.urlGeneratorModuleOptions.appUrl,
-      this.applicationConfig.getGlobalPrefix(),
+      this.getGlobalPrefix(),
       relativePath,
       query,
       params,
@@ -115,7 +122,7 @@ export class UrlGeneratorService {
     }
     const urlWithoutHash = generateUrl(
       this.urlGeneratorModuleOptions.appUrl,
-      this.applicationConfig.getGlobalPrefix(),
+      this.getGlobalPrefix(),
       relativePath,
       cloneQuery,
       params,
@@ -127,7 +134,7 @@ export class UrlGeneratorService {
     );
     const urlWithHash = generateUrl(
       this.urlGeneratorModuleOptions.appUrl,
-      this.applicationConfig.getGlobalPrefix(),
+      this.getGlobalPrefix(),
       relativePath,
       cloneQuery,
       params,
@@ -159,5 +166,13 @@ export class UrlGeneratorService {
       }
       return isSignatureEqual(signed, hmac);
     }
+  }
+
+  private getGlobalPrefix(): string {
+    if (this.urlGeneratorModuleOptions.detectGlobalPrefix === false) {
+      return ''
+    }
+
+    return this.applicationConfig.getGlobalPrefix()
   }
 }

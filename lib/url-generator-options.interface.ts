@@ -3,6 +3,7 @@ import { ModuleMetadata, Type } from '@nestjs/common';
 export interface UrlGeneratorModuleOptions {
   secret?: string;
   appUrl: string;
+  detectGlobalPrefix?: boolean;
 }
 
 export interface UrlGeneratorAsyncModuleOptions
