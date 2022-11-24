@@ -62,7 +62,6 @@ export class UrlGeneratorModule {
   ): Provider {
     if (options.useFactory) {
       return {
-        name: URL_GENERATOR_MODULE_OPTIONS,
         provide: URL_GENERATOR_MODULE_OPTIONS,
         useFactory: options.useFactory,
         inject: options.inject || [],
@@ -70,7 +69,6 @@ export class UrlGeneratorModule {
     }
 
     return {
-      name: URL_GENERATOR_MODULE_OPTIONS,
       provide: URL_GENERATOR_MODULE_OPTIONS,
       useFactory: async (optionsFactory: UrlGeneratorModuleOptionsFactory) => {
         return optionsFactory.createUrlGeneratorOptions();
