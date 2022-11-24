@@ -76,7 +76,7 @@ export class EmailController {
     const urlGenerator = this.urlGeneratorService.signControllerUrl({
       controller: EmailController,
       controllerMethod: EmailController.prototype.emailVerification,
-      expirationDate: new Date('2021-12-12'),
+      expirationDate: new Date('2022-12-12'),
       query: query,
       params: emailParams,
     });
