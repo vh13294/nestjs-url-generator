@@ -77,7 +77,7 @@ function isParamsNameInUrl(route: string, params: Params): boolean {
   const routeParts = route
     .split('/')
     .filter((path) => path[0] === ':')
-    .map((path) => path.substr(1));
+    .map((path) => path.substring(1));
 
   return Object.keys(params).every((param) => {
     return routeParts.includes(param);
