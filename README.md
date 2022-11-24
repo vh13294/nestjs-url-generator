@@ -222,14 +222,14 @@ If the url has been tampered or when the expiration date is due, then a Forbidde
 > app.controller.ts
 
 ```ts
-import { UrlGeneratorGuard } from 'nestjs-url-generator';
+import { SignedUrlGuard } from 'nestjs-url-generator';
 
 @Controller()
 export class AppController {
   constructor(private readonly urlGeneratorService: UrlGeneratorService) {}
 
   @Get('emailVerification')
-  @UseGuards(UrlGeneratorGuard)
+  @UseGuards(SignedUrlGuard)
   async emailVerification(): Promise<string> {
     return 'You emailed has been verified.';
   }
