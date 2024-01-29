@@ -1,6 +1,6 @@
 {
   "name": "@tumainimosha/nestjs-url-generator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "NestJs library for generating & signing url",
   "keywords": [
     "nestjs",
@@ -25,14 +25,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vh13294/nestjs-url-generator.git"
+    "url": "git+https://github.com/tumainimosha/nestjs-url-generator.git"
   },
-  "author": "Vong Panha Huot",
+  "author": "Tumaini Mosha, Vong Panha Huot, et. al",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vh13294/nestjs-url-generator/issues"
+    "url": "https://github.com/tumainimosha/nestjs-url-generator/issues"
   },
-  "homepage": "https://github.com/vh13294/nestjs-url-generator#readme",
+  "homepage": "https://github.com/tumainimosha/nestjs-url-generator#readme",
   "devDependencies": {
     "@nestjs/common": "^9.2.0 || ^10.0.0",
     "@nestjs/core": "^9.2.0 || ^10.0.0",
