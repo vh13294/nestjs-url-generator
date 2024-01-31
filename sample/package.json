@@ -26,6 +26,7 @@
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.2.0",
     "@nestjs/platform-express": "^9.2.0",
+    "@tumainimosha/nestjs-url-generator": "file:tumainimosha-nestjs-url-generator-1.0.4.tgz",
     "nestjs-url-generator": "file:nestjs-url-generator-1.0.2.tgz",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
